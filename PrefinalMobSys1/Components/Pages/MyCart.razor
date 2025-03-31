@@ -1,6 +1,90 @@
 ﻿@page "/mycart"
-<h3>MyCart</h3>
+
+<h3 class="text-center">My Cart</h3>
+
+<div class="container">
+    <div class="card p-3 shadow">
+        @foreach (var item in cartItems)
+
+        {
+            <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                <img src="@item.ImageUrl" alt="@item.Name" class="rounded-circle" width="60" height="60" />
+                <div class="ms-3 flex-grow-1">
+                    <h5 class="mb-0">@item.Name</h5>
+                    <small class="text-muted">@item.Description</small>
+                    <div class="d-flex align-items-center mt-2">
+                        <button class="btn btn-light btn-sm" @onclick="() => UpdateQuantity(item, -1)">-</button>
+                        <span class="mx-2">@item.Quantity</span>
+                        <button class="btn btn-light btn-sm" @onclick="() => UpdateQuantity(item, 1)">+</button>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h6 class="text-danger fw-bold">${@item.TotalPrice}</h6>
+                    <button class="btn btn-outline-danger btn-sm" @onclick="() => RemoveItem(item)">🗑</button>
+                </div>
+            </div>
+        }
+
+        <div class="border-top pt-3">
+            <p>Selected Items (@cartItems.Sum(i => i.Quantity))</p>
+            <p>Delivery & Handling: <span class="fw-bold">$10.00</span></p>
+            <h5>Subtotal: <span class="text-primary fw-bold">${TotalAmount}</span></h5>
+            <button class="btn btn-warning w-100 mt-2">Check Out</button>
+        </div>
+    </div>
+</div>
 
 @code {
+    private List<CartItem> cartItems = new()
+    {
+        new CartItem { Name = "Wagyu Steak", Description = "Melts in your belly", Quantity = 2, Price = 10000, ImageUrl = "https://fitrahfarms.com/wp-content/uploads/2021/08/NY-Steak-scaled.jpg" },
+        new CartItem { Name = "Feastables", Description = "Sigma Chocolate", Quantity = 1, Price = 200, ImageUrl = "https://http2.mlstatic.com/D_NQ_NP_665894-MLM51577719215_092022-O.jpg" },
+        new CartItem { Name = "Mint Chocolate Ice Cream", Description = "Taste like a Toothpaste", Quantity = 1, Price = 100, ImageUrl = "https://static.vecteezy.com/system/resources/previews/032/695/282/large_2x/mint-chocolate-ice-cream-ai-generated-free-photo.jpg" },
+    };
 
+
+
+    private decimal TotalAmount => cartItems.Sum(i => i.TotalPrice) + 10;
+
+
+
+    private void UpdateQuantity(CartItem item, int change)
+
+    {
+
+        if (item.Quantity + change > 0)
+
+            item.Quantity += change;
+
+    }
+
+
+
+    private void RemoveItem(CartItem item)
+
+    {
+
+        cartItems.Remove(item);
+
+    }
+
+
+
+    private class CartItem
+
+    {
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public int Quantity { get; set; }
+
+        public decimal Price { get; set; }
+
+        public string ImageUrl { get; set; }
+
+        public decimal TotalPrice => Quantity * Price;
+
+    }
 }
